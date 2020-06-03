@@ -1,6 +1,3 @@
-/*
- * TODO: profile the code for different types of input graphs to check for performance bottlenecks and assess the resource utilization
- * */
 
 #include <iostream>
 #include "sssp.h"
