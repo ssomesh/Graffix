@@ -39,7 +39,8 @@ void bc_exact (Graph& G, double* nodeBC) {
     // forward pass 
     do {
       cudaMemset(d_takeNextIter,false,sizeof(bool));
-      bc_forward_pass<<<gridSize, blockSize>>>(G, d_sigma, d_level, d_hops_from_source, n, d_takeNextIter);
+      unsigned shm = sizeof(unsigned) * sz;
+      bc_forward_pass<<<gridSize, blockSize,shm>>>(G, d_sigma, d_level, d_hops_from_source, n, d_takeNextIter);
       cudaDeviceSynchronize();
 #ifdef DEBUG
      cudaError_t errCode = cudaPeekAtLastError();
@@ -137,6 +138,7 @@ __global__ void initialize(unsigned* d_sigma, double* d_delta, int* d_level, int
           }
       }
   }
+  __syncthreads();
     // only processing the nodes at level '*d_hops_from_source' -- a level synchronous processing, though not work efficient
     if(d_level[u] == *d_hops_from_source) {  
        unsigned end = G.d_offset[u+1];

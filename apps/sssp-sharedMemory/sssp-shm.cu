@@ -67,6 +67,7 @@ ssspCompute(Graph G, uint64_t nnodes, uint64_t nedges, unsigned* d_dist, bool* d
    for(unsigned k=0; k < threshold; ++k){
   	(processnode(G, nnodes, d_dist, src))
    }
+  __syncthreads();
   if(processnode(G, nnodes, d_dist, src))
     *d_changed = true;
 }
