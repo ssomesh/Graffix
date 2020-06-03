@@ -82,14 +82,14 @@ void pagerank(float *hrank, float *rank, float *contributeRankToNeigh, Graph &gr
         unsigned shm = sizeof(unsigned) * sz;
 		processnode <<<num_blocks, block_size,shm>>> (rank, graph, contributeRankToNeigh);
 		cudaDeviceSynchronize();
-		reinitializeContributions <<<kconf.getNumberOfBlocks(), kconf.getNumberOfBlockThreads()>>> (rank, graph, contributeRankToNeigh, adjustfactor, d);
+		reinitializeContributions <<<num_blocks, block_size,shm>>> (rank, graph, contributeRankToNeigh, adjustfactor, d);
 		cudaDeviceSynchronize();
 	} while (iteration < 9); // running for 9 iterations
 	
 	//running for 10th iteration
 		processnode <<<num_blocks, block_size>>> (rank, graph, contributeRankToNeigh);
 		cudaDeviceSynchronize();
-		reinitializeContributions <<<kconf.getNumberOfBlocks(), kconf.getNumberOfBlockThreads()>>> (rank, graph, contributeRankToNeigh, adjustfactor, d);
+		reinitializeContributions <<<num_blocks, block_size,shm>>> (rank, graph, contributeRankToNeigh, adjustfactor, d);
 		cudaDeviceSynchronize();
 
   gpuErrchk(cudaMemcpy(hrank, drank, G.h_nnodes * sizeof(float), cudaMemcpyDeviceToHost));
